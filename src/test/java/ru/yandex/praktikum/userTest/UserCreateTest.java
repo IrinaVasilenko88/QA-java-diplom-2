@@ -1,6 +1,7 @@
 package ru.yandex.praktikum.userTest;
 
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,7 @@ public class UserCreateTest {
     @Before
     public void setUp() {
         user = new User();
+
     }
 
     @After
@@ -37,36 +39,47 @@ public class UserCreateTest {
     @DisplayName("Valid data user creation - Создание нового пользователя")
     public void userCanBeCreatedTest() {
         UserCreate userCreate = getRandomUser();
-        user.create(userCreate).assertThat().statusCode(SC_OK).body("success", is(true)).extract().path("accessToken");
+        ValidatableResponse response =user.create(userCreate);
+        accessToken = response.extract().path("accessToken");
+        response.assertThat().statusCode(SC_OK).body("success", is(true));
     }
 
     @Test
     @DisplayName("Same data user creation - Создание дубликата пользователя")
     public void sameUserCanNotBeCreatedTest() {
         UserCreate userCreate = getRandomUser();
-        user.create(userCreate).assertThat().statusCode(SC_OK).body("success", is(true)).extract().path("accessToken");
-        UserCreate userCreate2 = getRandomUser();
-        user.create(userCreate).assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("User already exists"));
+        ValidatableResponse response =user.create(userCreate);
+        accessToken = response.extract().path("accessToken");
+        response.assertThat().statusCode(SC_OK).body("success", is(true));
+        getRandomUser();
+        ValidatableResponse response2 =user.create(userCreate);
+        response2.assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("User already exists"));
     }
 
     @Test
     @DisplayName("User creation without name - Создание пользователя без имени")
     public void userWithoutNameCanNotBeCreatedTest() {
         UserCreate userCreate = getUserWithoutName();
-        user.create(userCreate).assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("Email, password and name are required fields"));
+        ValidatableResponse response =user.create(userCreate);
+        accessToken = response.extract().path("accessToken");
+        response.assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("Email, password and name are required fields"));
     }
 
     @Test
     @DisplayName("User creation without email - Создание пользователя без email")
     public void userWithoutEmailCanNotBeCreatedTest() {
         UserCreate userCreate = getUserWithoutEmail();
-        user.create(userCreate).assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("Email, password and name are required fields"));
+        ValidatableResponse response =user.create(userCreate);
+        accessToken = response.extract().path("accessToken");
+        response.assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("Email, password and name are required fields"));
     }
 
     @Test
     @DisplayName("User creation without password - Создание пользователя без пароля")
     public void userWithoutPasswordCanNotBeCreatedTest() {
         UserCreate userCreate = getUserWithoutPassword();
-        user.create(userCreate).assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("Email, password and name are required fields"));
+        ValidatableResponse response =user.create(userCreate);
+        accessToken = response.extract().path("accessToken");
+        response.assertThat().statusCode(SC_FORBIDDEN).body("message", equalTo("Email, password and name are required fields"));
     }
 }

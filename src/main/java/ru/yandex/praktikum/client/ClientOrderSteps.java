@@ -9,13 +9,15 @@ import static io.restassured.RestAssured.given;
 
 public class ClientOrderSteps extends Rest {
 
+    private static final String ORDER_API = "/orders";
+
     @Step("Send POST Request to /orders -Create order. Создание заказа")
     public ValidatableResponse createOrder(String token, OrderCreate orderCreate) {
         return given()
                 .spec(getBaseRequestSpec())
                 .header("Authorization", token)
                 .body(orderCreate)
-                .post("/orders")
+                .post(ORDER_API)
                 .then();
     }
 
@@ -26,7 +28,7 @@ public class ClientOrderSteps extends Rest {
                 .header("Authorization", token)
                 .spec(getBaseRequestSpec())
                 .when()
-                .get("/orders")
+                .get(ORDER_API)
                 .then();
     }
 }

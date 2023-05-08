@@ -23,7 +23,7 @@ public class UserLoginTest {
     public void setUp() {
         user = new User();
         userCreate = getRandomUser();
-        user.create(userCreate).assertThat().statusCode(SC_OK).body("success", is(true)).extract().path("accessToken");
+        accessToken= user.create(userCreate).assertThat().statusCode(SC_OK).body("success", is(true)).extract().path("accessToken");
     }
 
     @After
